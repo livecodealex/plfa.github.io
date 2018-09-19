@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SystemF: Inherently typed System F | Programming Language Foundations in Agda
+</title><!-- Begin Jekyll SEO tag v2.5.0 -->
+<meta name="generator" content="Jekyll v3.7.3" />
+<meta property="og:title" content="SystemF: Inherently typed System F" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Programming Language Foundations in Agda" />
+<meta property="og:description" content="Programming Language Foundations in Agda" />
+<link rel="canonical" href="https://plfa.ed.inf.ac.uk/SystemF/" />
+<meta property="og:url" content="https://plfa.ed.inf.ac.uk/SystemF/" />
+<meta property="og:site_name" content="Programming Language Foundations in Agda" />
+<script type="application/ld+json">
+{"description":"Programming Language Foundations in Agda","@type":"WebPage","url":"https://plfa.ed.inf.ac.uk/SystemF/","headline":"SystemF: Inherently typed System F","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://plfa.ed.inf.ac.uk/feed.xml" title="Programming Language Foundations in Agda
+" /></head>
+<body><header class="site-header" role="banner">
+
+    <div class="wrapper">
+
+        <a class="site-title" href="/">Programming Language Foundations in Agda
+</a>
+
+        <nav class="site-nav">
+            <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                    <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+                    <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+                    <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+                </svg>
+            </span>
+
+            <div class="trigger">
+                <a class="page-link" href="/">Table of Contents</a>
+                <a class="page-link" href="/about/">About</a>
+            </div>
+        </nav>
+
+    </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+      <h1 class="post-title">SystemF: Inherently typed System F</h1>
+  </header>
+
+  <p style="text-align:center;">
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/SystemF.lagda">Source</a>
+    
+    
+</p>
+
+
+  <div class="post-content">
+    <pre class="Agda"><a id="111" class="Keyword">module</a> <a id="118" href="/SystemF/" class="Module">plfa.SystemF</a> <a id="131" class="Keyword">where</a></pre>
+
+<h2 id="fixity-declarations">Fixity declarations</h2>
+
+<p>To begin, we get all our infix declarations out of the way.
+We list separately operators for judgements, types, and terms.</p>
+<pre class="Agda"><a id="309" class="Keyword">infix</a>  <a id="316" class="Number">4</a> <a id="318" href="/SystemF/#931" class="Datatype Operator">_∋⋆_</a>
+<a id="323" class="Keyword">infix</a>  <a id="330" class="Number">4</a> <a id="332" href="/SystemF/#4067" class="Datatype Operator">_∋_</a>
+<a id="336" class="Keyword">infix</a>  <a id="343" class="Number">4</a> <a id="345" href="/SystemF/#1273" class="Datatype Operator">_⊢⋆_</a>
+<a id="350" class="Keyword">infix</a>  <a id="357" class="Number">4</a> <a id="359" href="/SystemF/#4595" class="Datatype Operator">_⊢_</a>
+<a id="363" class="Keyword">infixl</a> <a id="370" class="Number">5</a> <a id="372" href="/SystemF/#765" class="InductiveConstructor Operator">_,⋆_</a>
+<a id="377" class="Keyword">infixl</a> <a id="384" class="Number">5</a> <a id="386" href="/SystemF/#3665" class="InductiveConstructor Operator">_,_</a>
+
+<a id="391" class="Keyword">infix</a>  <a id="398" class="Number">6</a> <a id="400" href="/SystemF/#1364" class="InductiveConstructor Operator">Π_</a>
+<a id="403" class="Keyword">infixr</a> <a id="410" class="Number">7</a> <a id="412" href="/SystemF/#1429" class="InductiveConstructor Operator">_⇒_</a>
+
+<a id="417" class="Keyword">infix</a>  <a id="424" class="Number">5</a> <a id="426" href="/SystemF/#4715" class="InductiveConstructor Operator">ƛ_</a>
+<a id="429" class="Keyword">infixl</a> <a id="436" class="Number">7</a> <a id="438" href="/SystemF/#4783" class="InductiveConstructor Operator">_·_</a>
+<a id="442" class="Keyword">infix</a>  <a id="449" class="Number">9</a> <a id="451" href="/SystemF/#4182" class="InductiveConstructor Operator">S_</a></pre>
+
+<h2 id="kinds">Kinds</h2>
+
+<p>The only kind is <code class="highlighter-rouge">★</code>, the kind of types.</p>
+<pre class="Agda"><a id="530" class="Keyword">data</a> <a id="Kind"></a><a id="535" href="/SystemF/#535" class="Datatype">Kind</a> <a id="540" class="Symbol">:</a> <a id="542" class="PrimitiveType">Set</a> <a id="546" class="Keyword">where</a>
+  <a id="Kind.★"></a><a id="554" href="/SystemF/#554" class="InductiveConstructor">★</a> <a id="556" class="Symbol">:</a> <a id="558" href="/SystemF/#535" class="Datatype">Kind</a></pre>
+<p>Let <code class="highlighter-rouge">J</code>, <code class="highlighter-rouge">K</code> range over kinds.</p>
+
+<h2 id="type-contexts">Type contexts</h2>
+
+<p>A type context is either empty or extends a type
+context by a type variable of a given kind.</p>
+<pre class="Agda"><a id="730" class="Keyword">data</a> <a id="Ctx⋆"></a><a id="735" href="/SystemF/#735" class="Datatype">Ctx⋆</a> <a id="740" class="Symbol">:</a> <a id="742" class="PrimitiveType">Set</a> <a id="746" class="Keyword">where</a>
+  <a id="Ctx⋆.∅"></a><a id="754" href="/SystemF/#754" class="InductiveConstructor">∅</a> <a id="756" class="Symbol">:</a> <a id="758" href="/SystemF/#735" class="Datatype">Ctx⋆</a>
+  <a id="Ctx⋆._,⋆_"></a><a id="765" href="/SystemF/#765" class="InductiveConstructor Operator">_,⋆_</a> <a id="770" class="Symbol">:</a> <a id="772" href="/SystemF/#735" class="Datatype">Ctx⋆</a> <a id="777" class="Symbol">→</a> <a id="779" href="/SystemF/#535" class="Datatype">Kind</a> <a id="784" class="Symbol">→</a> <a id="786" href="/SystemF/#735" class="Datatype">Ctx⋆</a></pre>
+<p>Let <code class="highlighter-rouge">Φ</code>, <code class="highlighter-rouge">Ψ</code> range over type contexts.</p>
+
+<h2 id="type-variables">Type variables</h2>
+
+<p>A type variable is indexed by its context and kind.</p>
+<pre class="Agda"><a id="926" class="Keyword">data</a> <a id="_∋⋆_"></a><a id="931" href="/SystemF/#931" class="Datatype Operator">_∋⋆_</a> <a id="936" class="Symbol">:</a> <a id="938" href="/SystemF/#735" class="Datatype">Ctx⋆</a> <a id="943" class="Symbol">→</a> <a id="945" href="/SystemF/#535" class="Datatype">Kind</a> <a id="950" class="Symbol">→</a> <a id="952" class="PrimitiveType">Set</a> <a id="956" class="Keyword">where</a>
+
+  <a id="_∋⋆_.Z"></a><a id="965" href="/SystemF/#965" class="InductiveConstructor">Z</a> <a id="967" class="Symbol">:</a> <a id="969" class="Symbol">∀</a> <a id="971" class="Symbol">{</a><a id="972" href="/SystemF/#972" class="Bound">Φ</a> <a id="974" href="/SystemF/#974" class="Bound">J</a><a id="975" class="Symbol">}</a>
+      <a id="983" class="Comment">-------------</a>
+    <a id="1001" class="Symbol">→</a> <a id="1003" href="/SystemF/#972" class="Bound">Φ</a> <a id="1005" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="1008" href="/SystemF/#974" class="Bound">J</a> <a id="1010" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1013" href="/SystemF/#974" class="Bound">J</a>
+
+  <a id="_∋⋆_.S_"></a><a id="1018" href="/SystemF/#1018" class="InductiveConstructor Operator">S_</a> <a id="1021" class="Symbol">:</a> <a id="1023" class="Symbol">∀</a> <a id="1025" class="Symbol">{</a><a id="1026" href="/SystemF/#1026" class="Bound">Φ</a> <a id="1028" href="/SystemF/#1028" class="Bound">J</a> <a id="1030" href="/SystemF/#1030" class="Bound">K</a><a id="1031" class="Symbol">}</a>
+    <a id="1037" class="Symbol">→</a> <a id="1039" href="/SystemF/#1026" class="Bound">Φ</a> <a id="1041" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1044" href="/SystemF/#1028" class="Bound">J</a>
+      <a id="1052" class="Comment">-------------</a>
+    <a id="1070" class="Symbol">→</a> <a id="1072" href="/SystemF/#1026" class="Bound">Φ</a> <a id="1074" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="1077" href="/SystemF/#1030" class="Bound">K</a> <a id="1079" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1082" href="/SystemF/#1028" class="Bound">J</a></pre>
+<p>Let <code class="highlighter-rouge">α</code>, <code class="highlighter-rouge">β</code> range over type variables.</p>
+
+<h2 id="types">Types</h2>
+
+<p>A type is indexed by its context and kind.  A type is either a type
+variable, a pi type, or a function type.</p>
+<pre class="Agda"><a id="1268" class="Keyword">data</a> <a id="_⊢⋆_"></a><a id="1273" href="/SystemF/#1273" class="Datatype Operator">_⊢⋆_</a> <a id="1278" class="Symbol">:</a> <a id="1280" href="/SystemF/#735" class="Datatype">Ctx⋆</a> <a id="1285" class="Symbol">→</a> <a id="1287" href="/SystemF/#535" class="Datatype">Kind</a> <a id="1292" class="Symbol">→</a> <a id="1294" class="PrimitiveType">Set</a> <a id="1298" class="Keyword">where</a>
+
+  <a id="_⊢⋆_.`_"></a><a id="1307" href="/SystemF/#1307" class="InductiveConstructor Operator">`_</a> <a id="1310" class="Symbol">:</a> <a id="1312" class="Symbol">∀</a> <a id="1314" class="Symbol">{</a><a id="1315" href="/SystemF/#1315" class="Bound">Φ</a> <a id="1317" href="/SystemF/#1317" class="Bound">J</a><a id="1318" class="Symbol">}</a>
+    <a id="1324" class="Symbol">→</a> <a id="1326" href="/SystemF/#1315" class="Bound">Φ</a> <a id="1328" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1331" href="/SystemF/#1317" class="Bound">J</a>
+      <a id="1339" class="Comment">--------</a>
+    <a id="1352" class="Symbol">→</a> <a id="1354" href="/SystemF/#1315" class="Bound">Φ</a> <a id="1356" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1359" href="/SystemF/#1317" class="Bound">J</a>
+
+  <a id="_⊢⋆_.Π_"></a><a id="1364" href="/SystemF/#1364" class="InductiveConstructor Operator">Π_</a> <a id="1367" class="Symbol">:</a> <a id="1369" class="Symbol">∀</a> <a id="1371" class="Symbol">{</a><a id="1372" href="/SystemF/#1372" class="Bound">Φ</a> <a id="1374" href="/SystemF/#1374" class="Bound">K</a><a id="1375" class="Symbol">}</a>
+    <a id="1381" class="Symbol">→</a> <a id="1383" href="/SystemF/#1372" class="Bound">Φ</a> <a id="1385" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="1388" href="/SystemF/#1374" class="Bound">K</a> <a id="1390" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1393" href="/SystemF/#554" class="InductiveConstructor">★</a>
+      <a id="1401" class="Comment">-----------</a>
+    <a id="1417" class="Symbol">→</a> <a id="1419" href="/SystemF/#1372" class="Bound">Φ</a> <a id="1421" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1424" href="/SystemF/#554" class="InductiveConstructor">★</a>
+
+  <a id="_⊢⋆_._⇒_"></a><a id="1429" href="/SystemF/#1429" class="InductiveConstructor Operator">_⇒_</a> <a id="1433" class="Symbol">:</a> <a id="1435" class="Symbol">∀</a> <a id="1437" class="Symbol">{</a><a id="1438" href="/SystemF/#1438" class="Bound">Φ</a><a id="1439" class="Symbol">}</a>
+    <a id="1445" class="Symbol">→</a> <a id="1447" href="/SystemF/#1438" class="Bound">Φ</a> <a id="1449" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1452" href="/SystemF/#554" class="InductiveConstructor">★</a>
+    <a id="1458" class="Symbol">→</a> <a id="1460" href="/SystemF/#1438" class="Bound">Φ</a> <a id="1462" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1465" href="/SystemF/#554" class="InductiveConstructor">★</a>
+      <a id="1473" class="Comment">------</a>
+    <a id="1484" class="Symbol">→</a> <a id="1486" href="/SystemF/#1438" class="Bound">Φ</a> <a id="1488" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="1491" href="/SystemF/#554" class="InductiveConstructor">★</a></pre>
+<p>Let <code class="highlighter-rouge">A</code>, <code class="highlighter-rouge">B</code>, <code class="highlighter-rouge">C</code> range over types.</p>
+
+<h2 id="type-renaming">Type renaming</h2>
+
+<p>A type renaming is a mapping of type variables to type variables.</p>
+
+<p>Extending a type renaming — used when going under a binder.</p>
+<pre class="Agda"><a id="ext⋆"></a><a id="1699" href="/SystemF/#1699" class="Function">ext⋆</a> <a id="1704" class="Symbol">:</a> <a id="1706" class="Symbol">∀</a> <a id="1708" class="Symbol">{</a><a id="1709" href="/SystemF/#1709" class="Bound">Φ</a> <a id="1711" href="/SystemF/#1711" class="Bound">Ψ</a><a id="1712" class="Symbol">}</a> <a id="1714" class="Symbol">→</a> <a id="1716" class="Symbol">(∀</a> <a id="1719" class="Symbol">{</a><a id="1720" href="/SystemF/#1720" class="Bound">J</a><a id="1721" class="Symbol">}</a> <a id="1723" class="Symbol">→</a> <a id="1725" href="/SystemF/#1709" class="Bound">Φ</a> <a id="1727" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1730" href="/SystemF/#1720" class="Bound">J</a> <a id="1732" class="Symbol">→</a> <a id="1734" href="/SystemF/#1711" class="Bound">Ψ</a> <a id="1736" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1739" href="/SystemF/#1720" class="Bound">J</a><a id="1740" class="Symbol">)</a>
+    <a id="1746" class="Comment">------------------------------------------</a>
+  <a id="1791" class="Symbol">→</a> <a id="1793" class="Symbol">(∀</a> <a id="1796" class="Symbol">{</a><a id="1797" href="/SystemF/#1797" class="Bound">J</a> <a id="1799" href="/SystemF/#1799" class="Bound">K</a><a id="1800" class="Symbol">}</a> <a id="1802" class="Symbol">→</a> <a id="1804" href="/SystemF/#1709" class="Bound">Φ</a> <a id="1806" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="1809" href="/SystemF/#1799" class="Bound">K</a> <a id="1811" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1814" href="/SystemF/#1797" class="Bound">J</a> <a id="1816" class="Symbol">→</a> <a id="1818" href="/SystemF/#1711" class="Bound">Ψ</a> <a id="1820" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="1823" href="/SystemF/#1799" class="Bound">K</a> <a id="1825" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1828" href="/SystemF/#1797" class="Bound">J</a><a id="1829" class="Symbol">)</a>
+<a id="1831" href="/SystemF/#1699" class="Function">ext⋆</a> <a id="1836" href="/SystemF/#1836" class="Bound">ρ</a> <a id="1838" href="/SystemF/#965" class="InductiveConstructor">Z</a>      <a id="1845" class="Symbol">=</a>  <a id="1848" href="/SystemF/#965" class="InductiveConstructor">Z</a>
+<a id="1850" href="/SystemF/#1699" class="Function">ext⋆</a> <a id="1855" href="/SystemF/#1855" class="Bound">ρ</a> <a id="1857" class="Symbol">(</a><a id="1858" href="/SystemF/#1018" class="InductiveConstructor Operator">S</a> <a id="1860" href="/SystemF/#1860" class="Bound">α</a><a id="1861" class="Symbol">)</a>  <a id="1864" class="Symbol">=</a>  <a id="1867" href="/SystemF/#1018" class="InductiveConstructor Operator">S</a> <a id="1869" class="Symbol">(</a><a id="1870" href="/SystemF/#1855" class="Bound">ρ</a> <a id="1872" href="/SystemF/#1860" class="Bound">α</a><a id="1873" class="Symbol">)</a></pre>
+
+<p>Apply a type renaming to a type.</p>
+<pre class="Agda"><a id="rename⋆"></a><a id="1933" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="1941" class="Symbol">:</a> <a id="1943" class="Symbol">∀</a> <a id="1945" class="Symbol">{</a><a id="1946" href="/SystemF/#1946" class="Bound">Φ</a> <a id="1948" href="/SystemF/#1948" class="Bound">Ψ</a><a id="1949" class="Symbol">}</a>
+  <a id="1953" class="Symbol">→</a> <a id="1955" class="Symbol">(∀</a> <a id="1958" class="Symbol">{</a><a id="1959" href="/SystemF/#1959" class="Bound">J</a><a id="1960" class="Symbol">}</a> <a id="1962" class="Symbol">→</a> <a id="1964" href="/SystemF/#1946" class="Bound">Φ</a> <a id="1966" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1969" href="/SystemF/#1959" class="Bound">J</a> <a id="1971" class="Symbol">→</a> <a id="1973" href="/SystemF/#1948" class="Bound">Ψ</a> <a id="1975" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="1978" href="/SystemF/#1959" class="Bound">J</a><a id="1979" class="Symbol">)</a>
+    <a id="1985" class="Comment">----------------------------</a>
+  <a id="2016" class="Symbol">→</a> <a id="2018" class="Symbol">(∀</a> <a id="2021" class="Symbol">{</a><a id="2022" href="/SystemF/#2022" class="Bound">J</a><a id="2023" class="Symbol">}</a> <a id="2025" class="Symbol">→</a> <a id="2027" href="/SystemF/#1946" class="Bound">Φ</a> <a id="2029" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2032" href="/SystemF/#2022" class="Bound">J</a> <a id="2034" class="Symbol">→</a> <a id="2036" href="/SystemF/#1948" class="Bound">Ψ</a> <a id="2038" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2041" href="/SystemF/#2022" class="Bound">J</a><a id="2042" class="Symbol">)</a>
+<a id="2044" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2052" href="/SystemF/#2052" class="Bound">ρ</a> <a id="2054" class="Symbol">(</a><a id="2055" href="/SystemF/#1307" class="InductiveConstructor Operator">`</a> <a id="2057" href="/SystemF/#2057" class="Bound">α</a><a id="2058" class="Symbol">)</a>    <a id="2063" class="Symbol">=</a>  <a id="2066" href="/SystemF/#1307" class="InductiveConstructor Operator">`</a> <a id="2068" class="Symbol">(</a><a id="2069" href="/SystemF/#2052" class="Bound">ρ</a> <a id="2071" href="/SystemF/#2057" class="Bound">α</a><a id="2072" class="Symbol">)</a>
+<a id="2074" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2082" href="/SystemF/#2082" class="Bound">ρ</a> <a id="2084" class="Symbol">(</a><a id="2085" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="2087" href="/SystemF/#2087" class="Bound">B</a><a id="2088" class="Symbol">)</a>    <a id="2093" class="Symbol">=</a>  <a id="2096" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="2098" class="Symbol">(</a><a id="2099" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2107" class="Symbol">(</a><a id="2108" href="/SystemF/#1699" class="Function">ext⋆</a> <a id="2113" href="/SystemF/#2082" class="Bound">ρ</a><a id="2114" class="Symbol">)</a> <a id="2116" href="/SystemF/#2087" class="Bound">B</a><a id="2117" class="Symbol">)</a>
+<a id="2119" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2127" href="/SystemF/#2127" class="Bound">ρ</a> <a id="2129" class="Symbol">(</a><a id="2130" href="/SystemF/#2130" class="Bound">A</a> <a id="2132" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="2134" href="/SystemF/#2134" class="Bound">B</a><a id="2135" class="Symbol">)</a>  <a id="2138" class="Symbol">=</a>  <a id="2141" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2149" href="/SystemF/#2127" class="Bound">ρ</a> <a id="2151" href="/SystemF/#2130" class="Bound">A</a> <a id="2153" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="2155" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2163" href="/SystemF/#2127" class="Bound">ρ</a> <a id="2165" href="/SystemF/#2134" class="Bound">B</a></pre>
+
+<p>Weakening is a special case of renaming.</p>
+<pre class="Agda"><a id="weaken⋆"></a><a id="2233" href="/SystemF/#2233" class="Function">weaken⋆</a> <a id="2241" class="Symbol">:</a> <a id="2243" class="Symbol">∀</a> <a id="2245" class="Symbol">{</a><a id="2246" href="/SystemF/#2246" class="Bound">Φ</a> <a id="2248" href="/SystemF/#2248" class="Bound">J</a> <a id="2250" href="/SystemF/#2250" class="Bound">K</a><a id="2251" class="Symbol">}</a>
+  <a id="2255" class="Symbol">→</a> <a id="2257" href="/SystemF/#2246" class="Bound">Φ</a> <a id="2259" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2262" href="/SystemF/#2248" class="Bound">J</a>
+    <a id="2268" class="Comment">-------------</a>
+  <a id="2284" class="Symbol">→</a> <a id="2286" href="/SystemF/#2246" class="Bound">Φ</a> <a id="2288" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="2291" href="/SystemF/#2250" class="Bound">K</a> <a id="2293" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2296" href="/SystemF/#2248" class="Bound">J</a>
+<a id="2298" href="/SystemF/#2233" class="Function">weaken⋆</a> <a id="2306" class="Symbol">=</a> <a id="2308" href="/SystemF/#1933" class="Function">rename⋆</a> <a id="2316" href="/SystemF/#1018" class="InductiveConstructor Operator">S_</a></pre>
+
+<h2 id="type-substitution">Type substitution</h2>
+
+<p>A type substitution is a mapping of type variables to types.</p>
+
+<p>Extending a type substitution — used when going under a binder.</p>
+<pre class="Agda"><a id="exts⋆"></a><a id="2493" href="/SystemF/#2493" class="Function">exts⋆</a> <a id="2499" class="Symbol">:</a> <a id="2501" class="Symbol">∀</a> <a id="2503" class="Symbol">{</a><a id="2504" href="/SystemF/#2504" class="Bound">Φ</a> <a id="2506" href="/SystemF/#2506" class="Bound">Ψ</a><a id="2507" class="Symbol">}</a> <a id="2509" class="Symbol">→</a> <a id="2511" class="Symbol">(∀</a> <a id="2514" class="Symbol">{</a><a id="2515" href="/SystemF/#2515" class="Bound">J</a><a id="2516" class="Symbol">}</a> <a id="2518" class="Symbol">→</a> <a id="2520" href="/SystemF/#2504" class="Bound">Φ</a> <a id="2522" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="2525" href="/SystemF/#2515" class="Bound">J</a> <a id="2527" class="Symbol">→</a> <a id="2529" href="/SystemF/#2506" class="Bound">Ψ</a> <a id="2531" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2534" href="/SystemF/#2515" class="Bound">J</a><a id="2535" class="Symbol">)</a>
+    <a id="2541" class="Comment">-------------------------------------------</a>
+  <a id="2587" class="Symbol">→</a> <a id="2589" class="Symbol">(∀</a> <a id="2592" class="Symbol">{</a><a id="2593" href="/SystemF/#2593" class="Bound">J</a> <a id="2595" href="/SystemF/#2595" class="Bound">K</a><a id="2596" class="Symbol">}</a> <a id="2598" class="Symbol">→</a> <a id="2600" href="/SystemF/#2504" class="Bound">Φ</a> <a id="2602" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="2605" href="/SystemF/#2595" class="Bound">K</a> <a id="2607" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="2610" href="/SystemF/#2593" class="Bound">J</a> <a id="2612" class="Symbol">→</a> <a id="2614" href="/SystemF/#2506" class="Bound">Ψ</a> <a id="2616" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="2619" href="/SystemF/#2595" class="Bound">K</a> <a id="2621" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2624" href="/SystemF/#2593" class="Bound">J</a><a id="2625" class="Symbol">)</a>
+<a id="2627" href="/SystemF/#2493" class="Function">exts⋆</a> <a id="2633" href="/SystemF/#2633" class="Bound">σ</a> <a id="2635" href="/SystemF/#965" class="InductiveConstructor">Z</a>      <a id="2642" class="Symbol">=</a>  <a id="2645" href="/SystemF/#1307" class="InductiveConstructor Operator">`</a> <a id="2647" href="/SystemF/#965" class="InductiveConstructor">Z</a>
+<a id="2649" href="/SystemF/#2493" class="Function">exts⋆</a> <a id="2655" href="/SystemF/#2655" class="Bound">σ</a> <a id="2657" class="Symbol">(</a><a id="2658" href="/SystemF/#1018" class="InductiveConstructor Operator">S</a> <a id="2660" href="/SystemF/#2660" class="Bound">α</a><a id="2661" class="Symbol">)</a>  <a id="2664" class="Symbol">=</a>  <a id="2667" href="/SystemF/#2233" class="Function">weaken⋆</a> <a id="2675" class="Symbol">(</a><a id="2676" href="/SystemF/#2655" class="Bound">σ</a> <a id="2678" href="/SystemF/#2660" class="Bound">α</a><a id="2679" class="Symbol">)</a></pre>
+
+<p>Apply a type substitution to a type.</p>
+<pre class="Agda"><a id="subst⋆"></a><a id="2743" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2750" class="Symbol">:</a> <a id="2752" class="Symbol">∀</a> <a id="2754" class="Symbol">{</a><a id="2755" href="/SystemF/#2755" class="Bound">Φ</a> <a id="2757" href="/SystemF/#2757" class="Bound">Ψ</a><a id="2758" class="Symbol">}</a>
+  <a id="2762" class="Symbol">→</a> <a id="2764" class="Symbol">(∀</a> <a id="2767" class="Symbol">{</a><a id="2768" href="/SystemF/#2768" class="Bound">J</a><a id="2769" class="Symbol">}</a> <a id="2771" class="Symbol">→</a> <a id="2773" href="/SystemF/#2755" class="Bound">Φ</a> <a id="2775" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="2778" href="/SystemF/#2768" class="Bound">J</a> <a id="2780" class="Symbol">→</a> <a id="2782" href="/SystemF/#2757" class="Bound">Ψ</a> <a id="2784" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2787" href="/SystemF/#2768" class="Bound">J</a><a id="2788" class="Symbol">)</a>
+    <a id="2794" class="Comment">-----------------------------</a>
+  <a id="2826" class="Symbol">→</a> <a id="2828" class="Symbol">(∀</a> <a id="2831" class="Symbol">{</a><a id="2832" href="/SystemF/#2832" class="Bound">J</a><a id="2833" class="Symbol">}</a> <a id="2835" class="Symbol">→</a> <a id="2837" href="/SystemF/#2755" class="Bound">Φ</a> <a id="2839" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2842" href="/SystemF/#2832" class="Bound">J</a> <a id="2844" class="Symbol">→</a> <a id="2846" href="/SystemF/#2757" class="Bound">Ψ</a> <a id="2848" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="2851" href="/SystemF/#2832" class="Bound">J</a><a id="2852" class="Symbol">)</a>
+<a id="2854" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2861" href="/SystemF/#2861" class="Bound">σ</a> <a id="2863" class="Symbol">(</a><a id="2864" href="/SystemF/#1307" class="InductiveConstructor Operator">`</a> <a id="2866" href="/SystemF/#2866" class="Bound">α</a><a id="2867" class="Symbol">)</a>     <a id="2873" class="Symbol">=</a>  <a id="2876" href="/SystemF/#2861" class="Bound">σ</a> <a id="2878" href="/SystemF/#2866" class="Bound">α</a>
+<a id="2880" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2887" href="/SystemF/#2887" class="Bound">σ</a> <a id="2889" class="Symbol">(</a><a id="2890" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="2892" href="/SystemF/#2892" class="Bound">B</a><a id="2893" class="Symbol">)</a>     <a id="2899" class="Symbol">=</a>  <a id="2902" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="2904" class="Symbol">(</a><a id="2905" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2912" class="Symbol">(</a><a id="2913" href="/SystemF/#2493" class="Function">exts⋆</a> <a id="2919" href="/SystemF/#2887" class="Bound">σ</a><a id="2920" class="Symbol">)</a> <a id="2922" href="/SystemF/#2892" class="Bound">B</a><a id="2923" class="Symbol">)</a>
+<a id="2925" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2932" href="/SystemF/#2932" class="Bound">σ</a> <a id="2934" class="Symbol">(</a><a id="2935" href="/SystemF/#2935" class="Bound">A</a> <a id="2937" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="2939" href="/SystemF/#2939" class="Bound">B</a><a id="2940" class="Symbol">)</a>   <a id="2944" class="Symbol">=</a>  <a id="2947" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2954" href="/SystemF/#2932" class="Bound">σ</a> <a id="2956" href="/SystemF/#2935" class="Bound">A</a> <a id="2958" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="2960" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="2967" href="/SystemF/#2932" class="Bound">σ</a> <a id="2969" href="/SystemF/#2939" class="Bound">B</a></pre>
+
+<p>A special case is substitution a type for the
+outermost free variable.</p>
+<pre class="Agda"><a id="_[_]⋆"></a><a id="3067" href="/SystemF/#3067" class="Function Operator">_[_]⋆</a> <a id="3073" class="Symbol">:</a> <a id="3075" class="Symbol">∀</a> <a id="3077" class="Symbol">{</a><a id="3078" href="/SystemF/#3078" class="Bound">Φ</a> <a id="3080" href="/SystemF/#3080" class="Bound">J</a> <a id="3082" href="/SystemF/#3082" class="Bound">K</a><a id="3083" class="Symbol">}</a>
+        <a id="3093" class="Symbol">→</a> <a id="3095" href="/SystemF/#3078" class="Bound">Φ</a> <a id="3097" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="3100" href="/SystemF/#3082" class="Bound">K</a> <a id="3102" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="3105" href="/SystemF/#3080" class="Bound">J</a>
+        <a id="3115" class="Symbol">→</a> <a id="3117" href="/SystemF/#3078" class="Bound">Φ</a> <a id="3119" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="3122" href="/SystemF/#3082" class="Bound">K</a> 
+          <a id="3135" class="Comment">-------------</a>
+        <a id="3157" class="Symbol">→</a> <a id="3159" href="/SystemF/#3078" class="Bound">Φ</a> <a id="3161" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="3164" href="/SystemF/#3080" class="Bound">J</a>
+<a id="3166" href="/SystemF/#3067" class="Function Operator">_[_]⋆</a> <a id="3172" class="Symbol">{</a><a id="3173" href="/SystemF/#3173" class="Bound">Φ</a><a id="3174" class="Symbol">}</a> <a id="3176" class="Symbol">{</a><a id="3177" href="/SystemF/#3177" class="Bound">J</a><a id="3178" class="Symbol">}</a> <a id="3180" class="Symbol">{</a><a id="3181" href="/SystemF/#3181" class="Bound">K</a><a id="3182" class="Symbol">}</a> <a id="3184" href="/SystemF/#3184" class="Bound">B</a> <a id="3186" href="/SystemF/#3186" class="Bound">A</a> <a id="3188" class="Symbol">=</a>  <a id="3191" href="/SystemF/#2743" class="Function">subst⋆</a> <a id="3198" class="Symbol">{</a><a id="3199" href="/SystemF/#3173" class="Bound">Φ</a> <a id="3201" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="3204" href="/SystemF/#3181" class="Bound">K</a><a id="3205" class="Symbol">}</a> <a id="3207" class="Symbol">{</a><a id="3208" href="/SystemF/#3173" class="Bound">Φ</a><a id="3209" class="Symbol">}</a> <a id="3211" href="/SystemF/#3229" class="Function">σ</a> <a id="3213" class="Symbol">{</a><a id="3214" href="/SystemF/#3177" class="Bound">J</a><a id="3215" class="Symbol">}</a> <a id="3217" href="/SystemF/#3184" class="Bound">B</a>
+  <a id="3221" class="Keyword">where</a>
+  <a id="3229" href="/SystemF/#3229" class="Function">σ</a> <a id="3231" class="Symbol">:</a> <a id="3233" class="Symbol">∀</a> <a id="3235" class="Symbol">{</a><a id="3236" href="/SystemF/#3236" class="Bound">J</a><a id="3237" class="Symbol">}</a> <a id="3239" class="Symbol">→</a> <a id="3241" href="/SystemF/#3173" class="Bound">Φ</a> <a id="3243" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="3246" href="/SystemF/#3181" class="Bound">K</a> <a id="3248" href="/SystemF/#931" class="Datatype Operator">∋⋆</a> <a id="3251" href="/SystemF/#3236" class="Bound">J</a> <a id="3253" class="Symbol">→</a> <a id="3255" href="/SystemF/#3173" class="Bound">Φ</a> <a id="3257" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="3260" href="/SystemF/#3236" class="Bound">J</a>
+  <a id="3264" href="/SystemF/#3229" class="Function">σ</a> <a id="3266" href="/SystemF/#965" class="InductiveConstructor">Z</a>      <a id="3273" class="Symbol">=</a>  <a id="3276" href="/SystemF/#3186" class="Bound">A</a>
+  <a id="3280" href="/SystemF/#3229" class="Function">σ</a> <a id="3282" class="Symbol">(</a><a id="3283" href="/SystemF/#1018" class="InductiveConstructor Operator">S</a> <a id="3285" href="/SystemF/#3285" class="Bound">α</a><a id="3286" class="Symbol">)</a>  <a id="3289" class="Symbol">=</a>  <a id="3292" href="/SystemF/#1307" class="InductiveConstructor Operator">`</a> <a id="3294" href="/SystemF/#3285" class="Bound">α</a></pre>
+
+<h2 id="contexts-and-erasure">Contexts and erasure</h2>
+
+<p>We need to mutually define contexts and their
+erasure to type contexts.</p>
+<pre class="Agda"><a id="3419" class="Keyword">data</a> <a id="Ctx"></a><a id="3424" href="/SystemF/#3424" class="Datatype">Ctx</a> <a id="3428" class="Symbol">:</a> <a id="3430" class="PrimitiveType">Set</a>
+<a id="∥_∥"></a><a id="3434" href="/SystemF/#3434" class="Function Operator">∥_∥</a> <a id="3438" class="Symbol">:</a> <a id="3440" href="/SystemF/#3424" class="Datatype">Ctx</a> <a id="3444" class="Symbol">→</a> <a id="3446" href="/SystemF/#735" class="Datatype">Ctx⋆</a></pre>
+
+<p>A context is either empty, or extends a context by
+a type variable of a given kind, or extends a context
+by a variable of a given type.</p>
+<pre class="Agda"><a id="3612" class="Keyword">data</a> <a id="3617" href="/SystemF/#3424" class="Datatype">Ctx</a> <a id="3621" class="Keyword">where</a>
+  <a id="Ctx.∅"></a><a id="3629" href="/SystemF/#3629" class="InductiveConstructor">∅</a> <a id="3631" class="Symbol">:</a> <a id="3633" href="/SystemF/#3424" class="Datatype">Ctx</a>
+  <a id="Ctx._,⋆_"></a><a id="3639" href="/SystemF/#3639" class="InductiveConstructor Operator">_,⋆_</a> <a id="3644" class="Symbol">:</a> <a id="3646" href="/SystemF/#3424" class="Datatype">Ctx</a> <a id="3650" class="Symbol">→</a> <a id="3652" href="/SystemF/#535" class="Datatype">Kind</a> <a id="3657" class="Symbol">→</a> <a id="3659" href="/SystemF/#3424" class="Datatype">Ctx</a>
+  <a id="Ctx._,_"></a><a id="3665" href="/SystemF/#3665" class="InductiveConstructor Operator">_,_</a> <a id="3669" class="Symbol">:</a> <a id="3671" class="Symbol">∀</a> <a id="3673" class="Symbol">{</a><a id="3674" href="/SystemF/#3674" class="Bound">J</a><a id="3675" class="Symbol">}</a> <a id="3677" class="Symbol">(</a><a id="3678" href="/SystemF/#3678" class="Bound">Γ</a> <a id="3680" class="Symbol">:</a> <a id="3682" href="/SystemF/#3424" class="Datatype">Ctx</a><a id="3685" class="Symbol">)</a> <a id="3687" class="Symbol">→</a> <a id="3689" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3691" href="/SystemF/#3678" class="Bound">Γ</a> <a id="3693" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3695" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="3698" href="/SystemF/#3674" class="Bound">J</a> <a id="3700" class="Symbol">→</a> <a id="3702" href="/SystemF/#3424" class="Datatype">Ctx</a></pre>
+<p>Let <code class="highlighter-rouge">Γ</code> range over contexts.  In the last rule,
+the type is indexed by the erasure of the previous
+context to a type context and a kind.</p>
+
+<p>The erasure of a context is a type context.</p>
+<pre class="Agda"><a id="3912" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3914" href="/SystemF/#3629" class="InductiveConstructor">∅</a> <a id="3916" href="/SystemF/#3434" class="Function Operator">∥</a>       <a id="3924" class="Symbol">=</a>  <a id="3927" href="/SystemF/#754" class="InductiveConstructor">∅</a>
+<a id="3929" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3931" href="/SystemF/#3931" class="Bound">Γ</a> <a id="3933" href="/SystemF/#3639" class="InductiveConstructor Operator">,⋆</a> <a id="3936" href="/SystemF/#3936" class="Bound">J</a> <a id="3938" href="/SystemF/#3434" class="Function Operator">∥</a>  <a id="3941" class="Symbol">=</a>  <a id="3944" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3946" href="/SystemF/#3931" class="Bound">Γ</a> <a id="3948" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3950" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="3953" href="/SystemF/#3936" class="Bound">J</a>
+<a id="3955" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3957" href="/SystemF/#3957" class="Bound">Γ</a> <a id="3959" href="/SystemF/#3665" class="InductiveConstructor Operator">,</a> <a id="3961" href="/SystemF/#3961" class="Bound">A</a> <a id="3963" href="/SystemF/#3434" class="Function Operator">∥</a>   <a id="3967" class="Symbol">=</a>  <a id="3970" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="3972" href="/SystemF/#3957" class="Bound">Γ</a> <a id="3974" href="/SystemF/#3434" class="Function Operator">∥</a></pre>
+
+<h2 id="variables">Variables</h2>
+
+<p>A variable is indexed by its context and type.</p>
+<pre class="Agda"><a id="4062" class="Keyword">data</a> <a id="_∋_"></a><a id="4067" href="/SystemF/#4067" class="Datatype Operator">_∋_</a> <a id="4071" class="Symbol">:</a> <a id="4073" class="Symbol">∀</a> <a id="4075" class="Symbol">{</a><a id="4076" href="/SystemF/#4076" class="Bound">J</a><a id="4077" class="Symbol">}</a> <a id="4079" class="Symbol">(</a><a id="4080" href="/SystemF/#4080" class="Bound">Γ</a> <a id="4082" class="Symbol">:</a> <a id="4084" href="/SystemF/#3424" class="Datatype">Ctx</a><a id="4087" class="Symbol">)</a> <a id="4089" class="Symbol">→</a> <a id="4091" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4093" href="/SystemF/#4080" class="Bound">Γ</a> <a id="4095" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4097" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4100" href="/SystemF/#4076" class="Bound">J</a> <a id="4102" class="Symbol">→</a> <a id="4104" class="PrimitiveType">Set</a> <a id="4108" class="Keyword">where</a>
+
+  <a id="_∋_.Z"></a><a id="4117" href="/SystemF/#4117" class="InductiveConstructor">Z</a> <a id="4119" class="Symbol">:</a> <a id="4121" class="Symbol">∀</a> <a id="4123" class="Symbol">{</a><a id="4124" href="/SystemF/#4124" class="Bound">Γ</a> <a id="4126" href="/SystemF/#4126" class="Bound">J</a><a id="4127" class="Symbol">}</a> <a id="4129" class="Symbol">{</a><a id="4130" href="/SystemF/#4130" class="Bound">A</a> <a id="4132" class="Symbol">:</a> <a id="4134" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4136" href="/SystemF/#4124" class="Bound">Γ</a> <a id="4138" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4140" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4143" href="/SystemF/#4126" class="Bound">J</a><a id="4144" class="Symbol">}</a>
+      <a id="4152" class="Comment">----------</a>
+    <a id="4167" class="Symbol">→</a> <a id="4169" href="/SystemF/#4124" class="Bound">Γ</a> <a id="4171" href="/SystemF/#3665" class="InductiveConstructor Operator">,</a> <a id="4173" href="/SystemF/#4130" class="Bound">A</a> <a id="4175" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4177" href="/SystemF/#4130" class="Bound">A</a>
+
+  <a id="_∋_.S_"></a><a id="4182" href="/SystemF/#4182" class="InductiveConstructor Operator">S_</a> <a id="4185" class="Symbol">:</a> <a id="4187" class="Symbol">∀</a> <a id="4189" class="Symbol">{</a><a id="4190" href="/SystemF/#4190" class="Bound">Γ</a> <a id="4192" href="/SystemF/#4192" class="Bound">J</a> <a id="4194" href="/SystemF/#4194" class="Bound">K</a><a id="4195" class="Symbol">}</a> <a id="4197" class="Symbol">{</a><a id="4198" href="/SystemF/#4198" class="Bound">A</a> <a id="4200" class="Symbol">:</a> <a id="4202" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4204" href="/SystemF/#4190" class="Bound">Γ</a> <a id="4206" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4208" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4211" href="/SystemF/#4192" class="Bound">J</a><a id="4212" class="Symbol">}</a> <a id="4214" class="Symbol">{</a><a id="4215" href="/SystemF/#4215" class="Bound">B</a> <a id="4217" class="Symbol">:</a> <a id="4219" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4221" href="/SystemF/#4190" class="Bound">Γ</a> <a id="4223" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4225" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4228" href="/SystemF/#4194" class="Bound">K</a><a id="4229" class="Symbol">}</a>
+    <a id="4235" class="Symbol">→</a> <a id="4237" href="/SystemF/#4190" class="Bound">Γ</a> <a id="4239" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4241" href="/SystemF/#4198" class="Bound">A</a>
+      <a id="4249" class="Comment">----------</a>
+    <a id="4264" class="Symbol">→</a> <a id="4266" href="/SystemF/#4190" class="Bound">Γ</a> <a id="4268" href="/SystemF/#3665" class="InductiveConstructor Operator">,</a> <a id="4270" href="/SystemF/#4215" class="Bound">B</a> <a id="4272" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4274" href="/SystemF/#4198" class="Bound">A</a>
+
+  <a id="_∋_.T_"></a><a id="4279" href="/SystemF/#4279" class="InductiveConstructor Operator">T_</a> <a id="4282" class="Symbol">:</a> <a id="4284" class="Symbol">∀</a> <a id="4286" class="Symbol">{</a><a id="4287" href="/SystemF/#4287" class="Bound">Γ</a> <a id="4289" href="/SystemF/#4289" class="Bound">J</a> <a id="4291" href="/SystemF/#4291" class="Bound">K</a><a id="4292" class="Symbol">}</a> <a id="4294" class="Symbol">{</a><a id="4295" href="/SystemF/#4295" class="Bound">A</a> <a id="4297" class="Symbol">:</a> <a id="4299" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4301" href="/SystemF/#4287" class="Bound">Γ</a> <a id="4303" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4305" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4308" href="/SystemF/#4289" class="Bound">J</a><a id="4309" class="Symbol">}</a>
+    <a id="4315" class="Symbol">→</a> <a id="4317" href="/SystemF/#4287" class="Bound">Γ</a> <a id="4319" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4321" href="/SystemF/#4295" class="Bound">A</a>
+      <a id="4329" class="Comment">-------------------</a>
+    <a id="4353" class="Symbol">→</a> <a id="4355" href="/SystemF/#4287" class="Bound">Γ</a> <a id="4357" href="/SystemF/#3639" class="InductiveConstructor Operator">,⋆</a> <a id="4360" href="/SystemF/#4291" class="Bound">K</a> <a id="4362" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4364" href="/SystemF/#2233" class="Function">weaken⋆</a> <a id="4372" href="/SystemF/#4295" class="Bound">A</a></pre>
+<p>Let <code class="highlighter-rouge">x</code>, <code class="highlighter-rouge">y</code> range over variables.</p>
+
+<h2 id="terms">Terms</h2>
+
+<p>A term is indexed over by its context and type.  A term is a variable,
+an abstraction, an application, a type abstraction, or a type
+application.</p>
+<pre class="Agda"><a id="4590" class="Keyword">data</a> <a id="_⊢_"></a><a id="4595" href="/SystemF/#4595" class="Datatype Operator">_⊢_</a> <a id="4599" class="Symbol">:</a> <a id="4601" class="Symbol">∀</a> <a id="4603" class="Symbol">{</a><a id="4604" href="/SystemF/#4604" class="Bound">J</a><a id="4605" class="Symbol">}</a> <a id="4607" class="Symbol">(</a><a id="4608" href="/SystemF/#4608" class="Bound">Γ</a> <a id="4610" class="Symbol">:</a> <a id="4612" href="/SystemF/#3424" class="Datatype">Ctx</a><a id="4615" class="Symbol">)</a> <a id="4617" class="Symbol">→</a> <a id="4619" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4621" href="/SystemF/#4608" class="Bound">Γ</a> <a id="4623" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4625" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4628" href="/SystemF/#4604" class="Bound">J</a> <a id="4630" class="Symbol">→</a> <a id="4632" class="PrimitiveType">Set</a> <a id="4636" class="Keyword">where</a>
+
+  <a id="_⊢_.`_"></a><a id="4645" href="/SystemF/#4645" class="InductiveConstructor Operator">`_</a> <a id="4648" class="Symbol">:</a> <a id="4650" class="Symbol">∀</a> <a id="4652" class="Symbol">{</a><a id="4653" href="/SystemF/#4653" class="Bound">Γ</a> <a id="4655" href="/SystemF/#4655" class="Bound">J</a><a id="4656" class="Symbol">}</a> <a id="4658" class="Symbol">{</a><a id="4659" href="/SystemF/#4659" class="Bound">A</a> <a id="4661" class="Symbol">:</a> <a id="4663" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4665" href="/SystemF/#4653" class="Bound">Γ</a> <a id="4667" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4669" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4672" href="/SystemF/#4655" class="Bound">J</a><a id="4673" class="Symbol">}</a>
+    <a id="4679" class="Symbol">→</a> <a id="4681" href="/SystemF/#4653" class="Bound">Γ</a> <a id="4683" href="/SystemF/#4067" class="Datatype Operator">∋</a> <a id="4685" href="/SystemF/#4659" class="Bound">A</a>
+      <a id="4693" class="Comment">------</a>
+    <a id="4704" class="Symbol">→</a> <a id="4706" href="/SystemF/#4653" class="Bound">Γ</a> <a id="4708" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4710" href="/SystemF/#4659" class="Bound">A</a>
+
+  <a id="_⊢_.ƛ_"></a><a id="4715" href="/SystemF/#4715" class="InductiveConstructor Operator">ƛ_</a> <a id="4718" class="Symbol">:</a> <a id="4720" class="Symbol">∀</a> <a id="4722" class="Symbol">{</a><a id="4723" href="/SystemF/#4723" class="Bound">Γ</a> <a id="4725" href="/SystemF/#4725" class="Bound">A</a> <a id="4727" href="/SystemF/#4727" class="Bound">B</a><a id="4728" class="Symbol">}</a>
+    <a id="4734" class="Symbol">→</a> <a id="4736" href="/SystemF/#4723" class="Bound">Γ</a> <a id="4738" href="/SystemF/#3665" class="InductiveConstructor Operator">,</a> <a id="4740" href="/SystemF/#4725" class="Bound">A</a> <a id="4742" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4744" href="/SystemF/#4727" class="Bound">B</a>
+      <a id="4752" class="Comment">-----------</a>
+    <a id="4768" class="Symbol">→</a> <a id="4770" href="/SystemF/#4723" class="Bound">Γ</a> <a id="4772" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4774" href="/SystemF/#4725" class="Bound">A</a> <a id="4776" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="4778" href="/SystemF/#4727" class="Bound">B</a>
+
+  <a id="_⊢_._·_"></a><a id="4783" href="/SystemF/#4783" class="InductiveConstructor Operator">_·_</a> <a id="4787" class="Symbol">:</a> <a id="4789" class="Symbol">∀</a> <a id="4791" class="Symbol">{</a><a id="4792" href="/SystemF/#4792" class="Bound">Γ</a> <a id="4794" href="/SystemF/#4794" class="Bound">A</a> <a id="4796" href="/SystemF/#4796" class="Bound">B</a><a id="4797" class="Symbol">}</a>
+    <a id="4803" class="Symbol">→</a> <a id="4805" href="/SystemF/#4792" class="Bound">Γ</a> <a id="4807" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4809" href="/SystemF/#4794" class="Bound">A</a> <a id="4811" href="/SystemF/#1429" class="InductiveConstructor Operator">⇒</a> <a id="4813" href="/SystemF/#4796" class="Bound">B</a>
+    <a id="4819" class="Symbol">→</a> <a id="4821" href="/SystemF/#4792" class="Bound">Γ</a> <a id="4823" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4825" href="/SystemF/#4794" class="Bound">A</a>
+      <a id="4833" class="Comment">-----------</a>
+    <a id="4849" class="Symbol">→</a> <a id="4851" href="/SystemF/#4792" class="Bound">Γ</a> <a id="4853" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4855" href="/SystemF/#4796" class="Bound">B</a>
+
+  <a id="_⊢_.Λ_"></a><a id="4860" href="/SystemF/#4860" class="InductiveConstructor Operator">Λ_</a> <a id="4863" class="Symbol">:</a> <a id="4865" class="Symbol">∀</a> <a id="4867" class="Symbol">{</a><a id="4868" href="/SystemF/#4868" class="Bound">Γ</a> <a id="4870" href="/SystemF/#4870" class="Bound">K</a><a id="4871" class="Symbol">}</a> <a id="4873" class="Symbol">{</a><a id="4874" href="/SystemF/#4874" class="Bound">B</a> <a id="4876" class="Symbol">:</a> <a id="4878" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4880" href="/SystemF/#4868" class="Bound">Γ</a> <a id="4882" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4884" href="/SystemF/#765" class="InductiveConstructor Operator">,⋆</a> <a id="4887" href="/SystemF/#4870" class="Bound">K</a> <a id="4889" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4892" href="/SystemF/#554" class="InductiveConstructor">★</a><a id="4893" class="Symbol">}</a>
+    <a id="4899" class="Symbol">→</a> <a id="4901" href="/SystemF/#4868" class="Bound">Γ</a> <a id="4903" href="/SystemF/#3639" class="InductiveConstructor Operator">,⋆</a> <a id="4906" href="/SystemF/#4870" class="Bound">K</a> <a id="4908" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4910" href="/SystemF/#4874" class="Bound">B</a>
+      <a id="4918" class="Comment">----------</a>
+    <a id="4933" class="Symbol">→</a> <a id="4935" href="/SystemF/#4868" class="Bound">Γ</a> <a id="4937" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4939" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="4941" href="/SystemF/#4874" class="Bound">B</a>
+
+  <a id="_⊢_._·⋆_"></a><a id="4946" href="/SystemF/#4946" class="InductiveConstructor Operator">_·⋆_</a> <a id="4951" class="Symbol">:</a> <a id="4953" class="Symbol">∀</a> <a id="4955" class="Symbol">{</a><a id="4956" href="/SystemF/#4956" class="Bound">Γ</a> <a id="4958" href="/SystemF/#4958" class="Bound">B</a><a id="4959" class="Symbol">}</a>
+    <a id="4965" class="Symbol">→</a> <a id="4967" href="/SystemF/#4956" class="Bound">Γ</a> <a id="4969" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="4971" href="/SystemF/#1364" class="InductiveConstructor Operator">Π</a> <a id="4973" href="/SystemF/#4958" class="Bound">B</a>
+    <a id="4979" class="Symbol">→</a> <a id="4981" class="Symbol">(</a><a id="4982" href="/SystemF/#4982" class="Bound">A</a> <a id="4984" class="Symbol">:</a> <a id="4986" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4988" href="/SystemF/#4956" class="Bound">Γ</a> <a id="4990" href="/SystemF/#3434" class="Function Operator">∥</a> <a id="4992" href="/SystemF/#1273" class="Datatype Operator">⊢⋆</a> <a id="4995" href="/SystemF/#554" class="InductiveConstructor">★</a><a id="4996" class="Symbol">)</a>
+      <a id="5004" class="Comment">---------------</a>
+    <a id="5024" class="Symbol">→</a> <a id="5026" href="/SystemF/#4956" class="Bound">Γ</a> <a id="5028" href="/SystemF/#4595" class="Datatype Operator">⊢</a> <a id="5030" href="/SystemF/#4958" class="Bound">B</a> <a id="5032" href="/SystemF/#3067" class="Function Operator">[</a> <a id="5034" href="/SystemF/#4982" class="Bound">A</a> <a id="5036" href="/SystemF/#3067" class="Function Operator">]⋆</a></pre>
+
+<h2 id="remainder">Remainder</h2>
+
+<p>The development continues from here as in
+Chapter <a href="/DeBruijn/">DeBruijn</a>,
+defining renaming and substitution on terms and introducing reduction
+rules for terms, proving progress, and applying progress to derive an
+evaluator.</p>
+
+  </div>
+
+  <p style="text-align:center;">
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/SystemF.lagda">Source</a>
+    
+    
+</p>
+
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Programming Language Foundations in Agda
+</h2><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Philip Wadler</li><li><a class="u-email" href="mailto:wadler@inf.ed.ac.uk">wadler@inf.ed.ac.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wadler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wadler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Wen Kokke</li><li><a class="u-email" href="mailto:wen.kokke@ed.ac.uk">wen.kokke@ed.ac.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wenkokke</span></a></li><li><a href="https://www.twitter.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">wenkokke</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div></div>
+
+</footer>
+<!-- Import jQuery -->
+<script type="text/javascript" src="/assets/jquery.js"></script>
+
+<!-- Script which allows for foldable code blocks -->
+<script type="text/javascript">
+ $('div.foldable pre').each(function(){
+     var autoHeight = $(this).height();
+     var lineHeight = parseFloat($(this).css('line-height'));
+
+     var plus    = $("<div></div>");
+     var horLine = $("<div></div>");
+     var verLine = $("<div></div>");
+     $(this).prepend(plus);
+     plus.css({
+         'position'         : 'relative',
+         'float'            : 'right',
+         'right'            : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'width'            : lineHeight,
+         'height'           : lineHeight});
+     verLine.css({
+         'position'         : 'relative',
+         'height'           : lineHeight,
+         'width'            : '3px',
+         'background-color' : '#C1E0FF'});
+     horLine.css({
+         'position'         : 'relative',
+         'top'              : '-' + (0.5 * lineHeight + 1.5) + 'px',
+         'left'             : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'height'           : '3px',
+         'width'            : lineHeight,
+         'background-color' : '#C1E0FF'});
+     plus.append(verLine);
+     plus.append(horLine);
+
+     $(this).height(2.0 * lineHeight);
+     $(this).css('overflow','hidden');
+
+     $(this).click(function(){
+         if ($(this).height() == autoHeight) {
+             $(this).height(2.0 * lineHeight);
+             plus.show();
+         }
+         else {
+             $(this).height('auto');
+             plus.hide();
+         }
+     });
+ });
+</script>
+
+<!-- Import KaTeX -->
+<script type="text/javascript" src="/assets/katex.js"></script>
+
+<!-- Script which renders TeX using KaTeX -->
+<script type="text/javascript">
+ $("script[type='math/tex']").replaceWith(
+     function(){
+         var tex = $(this).text();
+         return "<span class=\"inline-equation\">" +
+                katex.renderToString(tex) +
+                "</span>";
+     });
+ $("script[type='math/tex; mode=display']").replaceWith(
+     function(){
+         var tex = $(this).text().replace(/%.*?(\n|$)/g,"");
+         return "<div class=\"equation\">" +
+                katex.renderToString("\\displaystyle "+tex) +
+                "</div>";
+     });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About | Programming Language Foundations in Agda
+</title><!-- Begin Jekyll SEO tag v2.5.0 -->
+<meta name="generator" content="Jekyll v3.7.3" />
+<meta property="og:title" content="About" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Programming Language Foundations in Agda" />
+<meta property="og:description" content="Programming Language Foundations in Agda" />
+<link rel="canonical" href="https://plfa.ed.inf.ac.uk/about/" />
+<meta property="og:url" content="https://plfa.ed.inf.ac.uk/about/" />
+<meta property="og:site_name" content="Programming Language Foundations in Agda" />
+<script type="application/ld+json">
+{"name":"Programming Language Foundations in Agda","description":"Programming Language Foundations in Agda","@type":"WebSite","url":"https://plfa.ed.inf.ac.uk/about/","headline":"About","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://plfa.ed.inf.ac.uk/feed.xml" title="Programming Language Foundations in Agda
+" /></head>
+<body><header class="site-header" role="banner">
+
+    <div class="wrapper">
+
+        <a class="site-title" href="/">Programming Language Foundations in Agda
+</a>
+
+        <nav class="site-nav">
+            <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                    <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+                    <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+                    <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+                </svg>
+            </span>
+
+            <div class="trigger">
+                <a class="page-link" href="/">Table of Contents</a>
+                <a class="page-link" href="/about/">About</a>
+            </div>
+        </nav>
+
+    </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+      <h1 class="post-title">About</h1>
+  </header>
+
+  <p style="text-align:center;">
+    
+    
+    
+</p>
+
+
+  <div class="post-content">
+    <h2 id="how-to-host-literate-code">How to host literate code</h2>
+
+<p>In directory <code class="highlighter-rouge">plfa.github.io/</code> run the following:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ make clobber              (remove all files before rebuilding system)
+$ make macos-setup          (might need sudo, but try it without first)
+$ make build                (builds lagda-&gt;markdown and website)
+$ make test                 (checks all links are valid)
+$ make build-incremental    (builds lagda-&gt;markdown and website using incremental)
+$ make server-start         (starts server in detached mode)
+$ make server-stop          (stops the server, uses pkill)
+</code></pre></div></div>
+
+<p>The visible page appears at</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>localhost:4000/&lt;permalink&gt;
+</code></pre></div></div>
+
+<h2 id="travis">Travis</h2>
+
+<p>Travis performs continuous integration (CI), generating web pages from github.
+View error messages at <a href="http://travis-ci.org/plfa/plfa.github.io">travis-ci.org</a>.</p>
+
+<h2 id="updates-to-agda2html">Updates to agda2html</h2>
+
+<p>Go to your clone of the agda2html repository, and run</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ git pull
+$ stack install
+</code></pre></div></div>
+
+<h2 id="unicode-abbreviations">Unicode abbreviations</h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>\to    →
+\u+    ⊎
+\all   ∀
+\x     ×
+x\_1   x₁
+x\_i   xᵢ
+</code></pre></div></div>
+
+<p>See
+<a href="https://github.com/agda/agda/blob/master/src/data/emacs-mode/agda-input.el#L194">agda-input.el</a>
+for more details.</p>
+
+<h2 id="how-to-use-agda-mode">How to use <code class="highlighter-rouge">agda-mode</code></h2>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>?            create hole
+{!...!}      create hole
+C-c C-l      load buffer
+C-c C-c x    split on variable x 
+C-c C-space  fill in hole
+</code></pre></div></div>
+
+<p>See <a href="http://agda.readthedocs.io/en/latest/tools/emacs-mode.html">the emacs-mode docs</a> for more details.</p>
+
+<h2 id="markdown">Markdown</h2>
+
+<p>For an overview of the Markdown syntax, see
+<a href="https://daringfireball.net/projects/markdown/syntax">the original description</a>,
+<a href="https://spec.commonmark.org/0.28/">the CommonMark project</a>, or
+<a href="https://kramdown.gettalong.org/syntax.html">the version that is used in this book</a>.</p>
+
+<h2 id="git">Git</h2>
+
+<p>Checkout this repository with</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone git@github.com:plfa/plfa.github.io.git
+</code></pre></div></div>
+
+<p>You can check this worked:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ cd plfa.github.io
+$ git status
+On branch dev
+Your branch is up-to-date with 'origin/dev'.
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+
+	out/
+
+nothing added to commit but untracked files present (use "git add" to track)
+$
+</code></pre></div></div>
+
+<h2 id="analytics">Analytics</h2>
+
+<p>Wen and Phil can track <a href="http://analytics.google.com/analytics/web/">Google Analytics</a>.</p>
+
+  </div>
+
+  <p style="text-align:center;">
+    
+    
+    
+</p>
+
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Programming Language Foundations in Agda
+</h2><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Philip Wadler</li><li><a class="u-email" href="mailto:wadler@inf.ed.ac.uk">wadler@inf.ed.ac.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wadler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wadler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Wen Kokke</li><li><a class="u-email" href="mailto:wen.kokke@ed.ac.uk">wen.kokke@ed.ac.uk</a></li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wenkokke</span></a></li><li><a href="https://www.twitter.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">wenkokke</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div></div>
+
+</footer>
+<!-- Import jQuery -->
+<script type="text/javascript" src="/assets/jquery.js"></script>
+
+<!-- Script which allows for foldable code blocks -->
+<script type="text/javascript">
+ $('div.foldable pre').each(function(){
+     var autoHeight = $(this).height();
+     var lineHeight = parseFloat($(this).css('line-height'));
+
+     var plus    = $("<div></div>");
+     var horLine = $("<div></div>");
+     var verLine = $("<div></div>");
+     $(this).prepend(plus);
+     plus.css({
+         'position'         : 'relative',
+         'float'            : 'right',
+         'right'            : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'width'            : lineHeight,
+         'height'           : lineHeight});
+     verLine.css({
+         'position'         : 'relative',
+         'height'           : lineHeight,
+         'width'            : '3px',
+         'background-color' : '#C1E0FF'});
+     horLine.css({
+         'position'         : 'relative',
+         'top'              : '-' + (0.5 * lineHeight + 1.5) + 'px',
+         'left'             : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'height'           : '3px',
+         'width'            : lineHeight,
+         'background-color' : '#C1E0FF'});
+     plus.append(verLine);
+     plus.append(horLine);
+
+     $(this).height(2.0 * lineHeight);
+     $(this).css('overflow','hidden');
+
+     $(this).click(function(){
+         if ($(this).height() == autoHeight) {
+             $(this).height(2.0 * lineHeight);
+             plus.show();
+         }
+         else {
+             $(this).height('auto');
+             plus.hide();
+         }
+     });
+ });
+</script>
+
+<!-- Import KaTeX -->
+<script type="text/javascript" src="/assets/katex.js"></script>
+
+<!-- Script which renders TeX using KaTeX -->
+<script type="text/javascript">
+ $("script[type='math/tex']").replaceWith(
+     function(){
+         var tex = $(this).text();
+         return "<span class=\"inline-equation\">" +
+                katex.renderToString(tex) +
+                "</span>";
+     });
+ $("script[type='math/tex; mode=display']").replaceWith(
+     function(){
+         var tex = $(this).text().replace(/%.*?(\n|$)/g,"");
+         return "<div class=\"equation\">" +
+                katex.renderToString("\\displaystyle "+tex) +
+                "</div>";
+     });
+</script>
+</body>
+
+</html>
